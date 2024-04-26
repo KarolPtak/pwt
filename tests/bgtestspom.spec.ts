@@ -37,7 +37,7 @@ test.describe('bg site should', () => {
         await icPage.IsInsightsPage();
         await icPage.FillSearch('the o');
 
-        const ocadoItem = await icPage.GetItem('Ocado');
+        const ocadoItem = await icPage.GetItem('Ocado’s robot revolution');
         await ocadoItem.click();
         
         let article = await InsightArticle.Create(page, 'Ocado’s robot retail revolution');
