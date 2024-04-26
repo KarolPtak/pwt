@@ -1,53 +1,43 @@
 import { test, expect } from '@playwright/test';
+import { RootPage } from './page-objects/bg-root-page';
+import { InsightsPage } from './page-objects/bg-insights-page';
+import { InsightArticle } from './page-objects/bg-insight-article';
 
-const baseUrl = 'https://www.bailliegifford.com';
+test.describe('bg site should', () => {
+    let rootPage: RootPage;
 
-test('bg', async ({ page }) => {
-    await page.goto(baseUrl);
+    test.beforeEach(async ({ page }) => {
+        rootPage = new RootPage(page);
+        await rootPage.goto();
+        await rootPage.acceptCookies();
+        await rootPage.chooseRegion();
+        await rootPage.gotoInsights();
+    });
 
-    await expect(page).toHaveTitle(/Investment Managers | Baillie Gifford/);
-    const privacyMessage = page.getByText('Your privacy matters to us'); //todo: or role?
-    await privacyMessage.isVisible();
-    await page.getByRole('button', { name: 'Accept all' }).click();
-    await expect(privacyMessage).toBeHidden();
+    test.afterEach(async ({ page }) => { });
 
-    const userLocationMessage = page.getByText('We detected you are in a location which is outside our licensed jurisdictions.');
-    await userLocationMessage.isVisible();
-    await page.getByRole('button', { name: 'Existing investors', exact: false }).click();
-    await userLocationMessage.isHidden();
+    test('filter insights', async ({ page }) => {
+        let icPage = new InsightsPage(page);
+        await icPage.IsInsightsPage();
 
-    //the site stores user selection and sometimes things happen to fast
-    await page.waitForTimeout(1000); // await new Promise( r => setTimeout(r, 1000) );
+        await icPage.FillSearch('the');
+        await icPage.AssertIcCount(15);
 
-    await page.getByRole('link', { name: 'View all insights' }).click();
+        await icPage.FillSearch('the o');
+        await icPage.AssertIcCount(6);
 
-    //--------------------
-    await expect(page).toHaveTitle(/Insights | Investment Managers | Baillie Gifford/, { timeout: 5000});
-    await page.getByRole('heading', { name: 'Insights', level: 1 }).isVisible();
+        const ocadoItem = await icPage.GetItem('Ocado');
+        await expect(ocadoItem).toBeVisible();
+    });
 
-    const searchInput = page.getByPlaceholder('Search insights'); //   await page.getByLabel('search label').fill('the');
+    test('navigate to the ocado article', async ({ page }) => {
+        let icPage = new InsightsPage(page);
+        await icPage.IsInsightsPage();
+        await icPage.FillSearch('the o');
 
-    await searchInput.fill('the');
-    await searchInput.press('Enter');
-    // await page.locator('.search-button').click(); //todo: send enter key instead
-    const searchResultsContainer = page.locator('.insightsSearchResults').first();
-
-    // const result = await page.getByRole('heading', { name: 'Insights', level: 2 }).;
-    await expect(page.getByText("Viewing 15 of")).toBeVisible();
-    await expect(searchResultsContainer.getByText("Viewing 15 of")).toBeVisible();
-    await expect(searchResultsContainer.getByRole('listitem')).toHaveCount(15);
-
-    await searchInput.fill('the o');
-    await searchInput.press('Enter');
-    // await page.locator('.search-button').click(); //todo: send enter key instead
-    
-    await expect(page.getByText("Viewing 6 of")).toBeVisible();
-    await expect(searchResultsContainer.getByText("Viewing 6 of")).toBeVisible();
-    await expect(searchResultsContainer.getByRole('listitem')).toHaveCount(6);
-
-    const itemToPick = searchResultsContainer.getByRole('listitem')
-        //.nth(2);
-        .filter({ hasText: 'Ocado'}); //.first();
+        const ocadoItem = await icPage.GetItem('Ocado');
+        await ocadoItem.click();
         
-    await itemToPick.click();
+        let article = await InsightArticle.Create(page, 'Ocado’s robot retail revolution');
+    });
 });
