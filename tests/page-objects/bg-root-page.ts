@@ -3,9 +3,12 @@ import { expect } from '@playwright/test';
 
 export class RootPage {
     baseUrl = 'https://www.bailliegifford.com';
+    private readonly privacyMessage: Locator;
+    private readonly audienceSelector: Locator;
 
     constructor(public readonly page: Page){
-
+        this.privacyMessage = this.page.getByText('Your privacy matters to us');
+        this.audienceSelector = this.page.locator("#audience-selector");
     }
 
     async goto() {
@@ -14,21 +17,18 @@ export class RootPage {
     }
 
     async acceptCookies() {
-        const privacyMessage = this.page.getByText('Your privacy matters to us');
-        await privacyMessage.isVisible();
+        await this.privacyMessage.isVisible();
         await this.page.getByRole('button', { name: 'Accept all' }).click();
-        await expect(privacyMessage).toBeHidden();
+        await expect(this.privacyMessage).toBeHidden();
     }
 
     async chooseIrelandRegion() {
-        const audienceSelector = await this.page.locator("#audience-selector");
-
-        const userLocationMessage = audienceSelector.getByText('01. Your location');
+        const userLocationMessage = this.audienceSelector.getByText('01. Your location');
         await userLocationMessage.isVisible();
-        await audienceSelector.getByRole('button', { name: 'Change' }).click();
-        await audienceSelector.getByRole('button', { name: 'Europe, Middle East & Africa' }).click();
-        await audienceSelector.getByRole('listitem').filter({ hasText: "Ireland" }).click();
-        await audienceSelector.getByRole('button', { name: 'Professional investor', exact: false }).click();
+        await this.audienceSelector.getByRole('button', { name: 'Change' }).click();
+        await this.audienceSelector.getByRole('button', { name: 'Europe, Middle East & Africa' }).click();
+        await this.audienceSelector.getByRole('listitem').filter({ hasText: "Ireland" }).click();
+        await this.audienceSelector.getByRole('button', { name: 'Professional investor', exact: false }).click();
         await userLocationMessage.isHidden();
     
         //the site stores user selection and sometimes if things happen too fast, after a redirect to a subpage the popup may appear again
