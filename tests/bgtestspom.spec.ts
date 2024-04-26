@@ -10,7 +10,9 @@ test.describe('bg site should', () => {
         rootPage = new RootPage(page);
         await rootPage.goto();
         await rootPage.acceptCookies();
-        await rootPage.chooseRegion();
+        
+        await rootPage.chooseIrelandRegion();
+
         await rootPage.gotoInsights();
     });
 
@@ -24,7 +26,7 @@ test.describe('bg site should', () => {
         await icPage.AssertIcCount(15);
 
         await icPage.FillSearch('the o');
-        await icPage.AssertIcCount(6);
+        await icPage.AssertIcCount(12);
 
         const ocadoItem = await icPage.GetItem('Ocado');
         await expect(ocadoItem).toBeVisible();

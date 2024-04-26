@@ -8,11 +8,10 @@ export class InsightsPage {
     async IsInsightsPage(){
         await expect(this.page).toHaveTitle(/Insights | Investment Managers | Baillie Gifford/, { timeout: 5000 });
         await this.page.getByRole('heading', { name: 'Insights', level: 1 }).isVisible();
-
     }
 
     async FillSearch(input: string){
-        const searchInput = this.page.getByPlaceholder('Search insights'); //   await page.getByLabel('search label').fill('the');
+        const searchInput = this.page.getByPlaceholder('Search insights');
         await searchInput.fill(input);
         await searchInput.press('Enter');
     }
@@ -20,10 +19,9 @@ export class InsightsPage {
     async AssertIcCount(count: number){
         const searchResultsContainer = this.page.locator('.insightsSearchResults').first();
 
-        // const result = await page.getByRole('heading', { name: 'Insights', level: 2 }).;
+        await expect(searchResultsContainer.getByRole('listitem')).toHaveCount(count);
         await expect(this.page.getByText(`Viewing ${count} of`)).toBeVisible();
         await expect(searchResultsContainer.getByText(`Viewing ${count} of`)).toBeVisible();
-        await expect(searchResultsContainer.getByRole('listitem')).toHaveCount(count);
     }
 
     async GetItem(name: string): Promise<Locator> {
