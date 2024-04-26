@@ -1,8 +1,8 @@
 import type { Page, Locator } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-export class RootPage {
-    baseUrl = 'https://www.bailliegifford.com';
+export class BgRootPage {
+    baseUrl = 'https://www.bailliegifford.com'; //can be also moved to playwright.config.ts
     private readonly privacyMessage: Locator;
     private readonly audienceSelector: Locator;
 
@@ -22,7 +22,7 @@ export class RootPage {
         await expect(this.privacyMessage).toBeHidden();
     }
 
-    async chooseIrelandRegion() {
+    async selectIrelandRegion() {
         const userLocationMessage = this.audienceSelector.getByText('01. Your location');
         await userLocationMessage.isVisible();
         await this.audienceSelector.getByRole('button', { name: 'Change' }).click();
@@ -36,7 +36,7 @@ export class RootPage {
         await this.page.waitForTimeout(1000);
     }
 
-    async gotoInsights() {
+    async gotoInsightsPage() {
         await this.page.getByRole('link', { name: 'View all insights' }).click();
     }
 }

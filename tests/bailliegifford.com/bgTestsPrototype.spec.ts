@@ -12,7 +12,7 @@ test('bg', async ({ page }) => {
     await page.getByText('Your privacy matters to us').isHidden();
 
     //this scenario may work only for PL IPs
-    const audienceSelector = await page.locator("#audience-selector");
+    const audienceSelector = page.locator("#audience-selector");
 
     const userLocationMessage = audienceSelector.getByText('01. Your location');
     await userLocationMessage.isVisible();

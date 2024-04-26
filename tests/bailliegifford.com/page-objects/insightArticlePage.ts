@@ -1,12 +1,12 @@
 import type { Page, Locator } from '@playwright/test';
 import { expect } from '@playwright/test';
 
-export class InsightArticle {
+export class InsightArticlePage {
     private constructor(public readonly page: Page, private readonly title: string){
     }
 
-    static async Create(page: Page, title: string): Promise<InsightArticle>{
-        var article = new InsightArticle(page, title);
+    static async create(page: Page, title: string): Promise<InsightArticlePage>{
+        var article = new InsightArticlePage(page, title);
         await article.IsInsightsPage()
         return article;
     }
